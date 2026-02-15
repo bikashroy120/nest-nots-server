@@ -12,6 +12,61 @@ model User {
   name      String?
   email     String   @unique
   password  String
+  role      Role     @default(STUDENT)
+  avatar    String?
+  address   String?
+  updateAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  courses   Course[]
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String
+  courses Course[]
+}
+
+model Course {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String?
+  thumbnail    String?
+  price        Float     @default(0)
+  isPublished  Boolean   @default(false)
+  category     Category  @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+  instructor   User      @relation(fields: [instructorId], references: [id])
+  instructorId Int
+  chapters     Chapter[]
+  updateAt     DateTime  @updatedAt
+  createdAt    DateTime  @default(now())
+}
+
+model Chapter {
+  id        Int      @id @default(autoincrement())
+  title     String
+  order     Int      @default(0)
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
+  lessons   Lesson[]
+  updateAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Lesson {
+  id        Int      @id @default(autoincrement())
+  title     String
+  videoUrl  String?
+  content   String?
+  order     Int      @default(0)
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  chapterId Int
   updateAt  DateTime @updatedAt
   createdAt DateTime @default(now())
 }
