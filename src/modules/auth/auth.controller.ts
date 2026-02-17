@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Res, } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, UseGuards, Req, } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
+import { AuthGuard } from 'src/common/guard/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -31,6 +32,14 @@ export class AuthController {
       sameSite: 'lax',
       maxAge: 60 * 60 * 1000,
     });
+    return result;
+  }
+
+  @Get("me")
+  @UseGuards(AuthGuard)
+  async getMe(@Req() req: Request) {
+    const id = req.user?.sub as number;
+    const result = await this.authService.getMe(id)
     return result;
   }
 }
