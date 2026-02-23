@@ -17,23 +17,23 @@ export class CourseController {
 
   @Get()
   async findAll(@Query() query: Record<string, any>) {
-    const filter = pick(query, ["searchTram", "categoryId"])
+    const filter = pick(query, ["searchTram", "category"])
     const paginationOptions = pick(query, paginationFields)
     return await this.courseService.findAll(filter, paginationOptions);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.courseService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.courseService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
-    return this.courseService.update(+id, updateCourseDto);
+  async update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
+    return await this.courseService.update(+id, updateCourseDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.courseService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.courseService.remove(+id);
   }
 }

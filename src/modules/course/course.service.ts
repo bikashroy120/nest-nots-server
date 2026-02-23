@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -25,7 +25,7 @@ export class CourseService {
   }
 
   async findAll(filterOptions: CourseFilterDto, paginationOptions: PaginationDto) {
-    const { searchTram, ...otherFilter } = filterOptions;
+    const { searchTram, category, ...otherFilter } = filterOptions;
 
     const andConditions: any[] = [];
 
@@ -36,13 +36,24 @@ export class CourseService {
         })),
       })
     }
+    if (category) {
+      andConditions.push({
+        AND: {
+          categoryId: Array.isArray(category) ? { in: Number(category) } : Number(category)
+        }
+      })
+    }
 
     if (Object.keys(otherFilter).length) {
       andConditions.push({
         AND: Object.entries(otherFilter).map(([key, value]) => {
-          return {
-            [key]: { in: value }
+
+          if (Array.isArray(value)) {
+            return {
+              [key]: { in: value }
+            }
           }
+          return { [key]: value }
         })
       })
     }
@@ -50,11 +61,13 @@ export class CourseService {
     const { page, limit, skip, sortOrder, sortBy } = calculatePagination(paginationOptions);
 
     const whereCOnditions = andConditions.length > 0 ? { AND: andConditions } : {}
-
     const result = await this.prismaCLient.course.findMany({
       where: whereCOnditions,
       include: {
-        category: true
+        category: true,
+        instructor: {
+          select: { name: true, avatar: true, email: true }
+        },
       },
       skip,
       take: limit,
@@ -75,15 +88,42 @@ export class CourseService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: number) {
+    const result = await this.prismaCLient.course.findUnique({
+      where: { id }, include: {
+        category: true,
+        instructor: {
+          select: { name: true, email: true, avatar: true }
+        }
+      }
+    });
+
+    if (!result) {
+      throw new NotFoundException("course not found this id")
+    }
+
+    return result;
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  async update(id: number, updateCourseDto: UpdateCourseDto) {
+    const result = await this.prismaCLient.course.update({
+      where: { id },
+      data: { ...updateCourseDto }
+    })
+    if (!result) {
+      throw new BadRequestException("failed to update course")
+    }
+    return result;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(id: number) {
+    const result = await this.prismaCLient.course.delete({
+      where: { id }
+    });
+
+    if (!result) {
+      throw new NotFoundException("course not found this id")
+    }
+    return result;
   }
 }
