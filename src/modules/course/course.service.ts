@@ -94,6 +94,12 @@ export class CourseService {
         category: true,
         instructor: {
           select: { name: true, email: true, avatar: true }
+        },
+        chapters: {
+          select: {
+            lessons: true,
+            title:true,
+          }
         }
       }
     });
