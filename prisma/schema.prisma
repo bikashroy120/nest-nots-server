@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -7,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String?
-  email     String   @unique
-  password  String
-  role      Role     @default(STUDENT)
-  avatar    String?
-  address   String?
-  updateAt  DateTime @updatedAt
-  createdAt DateTime @default(now())
-  courses   Course[]
+  id          Int          @id @default(autoincrement())
+  name        String?
+  email       String       @unique
+  password    String
+  role        Role         @default(STUDENT)
+  avatar      String?
+  address     String?
+  updateAt    DateTime     @updatedAt
+  createdAt   DateTime     @default(now())
+  courses     Course[]
+  enrollments Enrollment[]
 }
 
 enum Role {
@@ -32,26 +34,27 @@ model Category {
 }
 
 model Course {
-  id           Int       @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   title        String
   description  String?
   thumbnail    String?
-  price        Float     @default(0)
-  isPublished  Boolean   @default(false)
-  category     Category  @relation(fields: [categoryId], references: [id])
+  price        Float        @default(0)
+  isPublished  Boolean      @default(false)
+  category     Category     @relation(fields: [categoryId], references: [id])
   categoryId   Int
-  instructor   User      @relation(fields: [instructorId], references: [id])
+  instructor   User         @relation(fields: [instructorId], references: [id])
   instructorId Int
   chapters     Chapter[]
-  updateAt     DateTime  @updatedAt
-  createdAt    DateTime  @default(now())
+  updateAt     DateTime     @updatedAt
+  createdAt    DateTime     @default(now())
+  enrollments  Enrollment[]
 }
 
 model Chapter {
   id        Int      @id @default(autoincrement())
   title     String
   order     Int      @default(0)
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  Int
   lessons   Lesson[]
   updateAt  DateTime @updatedAt
@@ -59,13 +62,41 @@ model Chapter {
 }
 
 model Lesson {
-  id        Int      @id @default(autoincrement())
-  title     String
-  videoUrl  String?
-  content   String?
-  order     Int      @default(0)
-  chapter   Chapter  @relation(fields: [chapterId], references: [id])
-  chapterId Int
-  updateAt  DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id         Int        @id @default(autoincrement())
+  title      String
+  videoUrl   String?
+  content    String?
+  order      Int        @default(0)
+  chapter    Chapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId  Int
+  updateAt   DateTime   @updatedAt
+  createdAt  DateTime   @default(now())
+  progresses Progress[]
+}
+
+model Enrollment {
+  id         Int        @id @default(autoincrement())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  course     Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId   Int
+  progress   Float      @default(0)
+  updateAt   DateTime   @updatedAt
+  createdAt  DateTime   @default(now())
+  progresses Progress[]
+
+  @@unique([userId, courseId])
+}
+
+model Progress {
+  id           Int        @id @default(autoincrement())
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  enrollmentId Int
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId     Int
+  isCompleted  Boolean    @default(false)
+  updateAt     DateTime   @updatedAt
+  createdAt    DateTime   @default(now())
+
+  @@unique([enrollmentId, lessonId])
 }

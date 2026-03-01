@@ -10,9 +10,10 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { CourseModule } from './modules/course/course.module';
 import { ChapterModule } from './modules/chapter/chapter.module';
 import { LessonModule } from './modules/lesson/lesson.module';
+import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, CategoryModule, PrismaModule, CourseModule, ChapterModule, LessonModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, CategoryModule, PrismaModule, CourseModule, ChapterModule, LessonModule, EnrollmentModule],
   controllers: [AppController],
   providers: [AppService],
 })

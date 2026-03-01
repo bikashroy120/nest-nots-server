@@ -1,0 +1,10 @@
+/* eslint-disable prettier/prettier */
+import { IsNumber } from "class-validator";
+
+export class CreateEnrollmentDto {
+    @IsNumber()
+    userId: number;
+
+    @IsNumber()
+    courseId: number;
+}
