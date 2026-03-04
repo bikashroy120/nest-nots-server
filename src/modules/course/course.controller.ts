@@ -1,12 +1,16 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { pick } from 'src/common/helper/pick';
 import { paginationFields } from 'src/common/helper/constant';
+import { LoggerInterceptor } from 'src/interceptor/logger/logger.interceptor';
+import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 
 @Controller('course')
+@UseInterceptors(LoggerInterceptor)
+@UseInterceptors(TransformInterceptor)
 export class CourseController {
   constructor(private readonly courseService: CourseService) { }
 
