@@ -21,6 +21,10 @@ export class CourseService {
         categoryId: createCourseDto.categoryId,
       },
     });
+
+    console.log(result);
+
+
     return result;
   }
 

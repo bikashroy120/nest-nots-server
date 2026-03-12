@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
-import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -18,7 +17,7 @@ export class EnrollmentService {
     } catch (error: unknown) { // error এখন unknown
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new Error("এই ইউজার অলরেডি এই কোর্সে ইনরোল করেছেন!");
+          throw new BadRequestException("এই ইউজার অলরেডি এই কোর্সে ইনরোল করেছেন!");
         }
       }
       throw new Error(error instanceof Error ? error.message : "Internal Server Error");
@@ -32,10 +31,6 @@ export class EnrollmentService {
 
   findOne(id: number) {
     return `This action returns a #${id} enrollment`;
-  }
-
-  update(id: number, updateEnrollmentDto: UpdateEnrollmentDto) {
-    return `This action updates a #${id} enrollment`;
   }
 
   remove(id: number) {
