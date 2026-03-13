@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query } from '@nestjs/common';
 import { EnrollmentService } from './enrollment.service';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
 import { pick } from 'src/common/helper/pick';
@@ -17,9 +17,9 @@ export class EnrollmentController {
   }
 
   @Get()
-  async findAll(@Param() params: Record<string, any>) {
-    const filter = pick(params, ["searchTram", "startDate", "endDate"])
-    const paginationFilter = pick(params, paginationFields)
+  async findAll(@Query() query: Record<string, any>) {
+    const filter = pick(query, ["searchTram", "startDate", "endDate"])
+    const paginationFilter = pick(query, paginationFields)
     return await this.enrollmentService.findAll(filter, paginationFilter);
   }
 

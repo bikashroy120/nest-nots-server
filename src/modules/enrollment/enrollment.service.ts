@@ -38,7 +38,6 @@ export class EnrollmentService {
             course: {
               title: {
                 contains: searchTram,
-                mode: "insensitive"
               }
             }
           },
@@ -46,7 +45,6 @@ export class EnrollmentService {
             user: {
               name: {
                 contains: searchTram,
-                mode: "insensitive"
               }
             }
           }
@@ -57,13 +55,13 @@ export class EnrollmentService {
     if (startDate && endDate) {
       andCondition.push({
         createdAt: {
-          gte: new Date(startDate),
-          lte: new Date(endDate)
-        }
-      })
+          gte: new Date(`${startDate}T00:00:00.000Z`),
+          lte: new Date(`${endDate}T23:59:59.999Z`),
+        },
+      });
     }
 
-    const whereCondition = andCondition.length > 0 ? { AND: andCondition } : {};
+    const whereCondition: Prisma.EnrollmentWhereInput = andCondition.length > 0 ? { AND: andCondition } : {};
 
     const { page, limit, skip, sortBy, sortOrder } = calculatePagination(paginationFilters);
 
