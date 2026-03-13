@@ -3,6 +3,8 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { EnrollmentService } from './enrollment.service';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
+import { pick } from 'src/common/helper/pick';
+import { paginationFields } from 'src/common/helper/constant';
 
 
 @Controller('enrollment')
@@ -15,17 +17,19 @@ export class EnrollmentController {
   }
 
   @Get()
-  findAll() {
-    return this.enrollmentService.findAll();
+  async findAll(@Param() params: Record<string, any>) {
+    const filter = pick(params, ["searchTram", "startDate", "endDate"])
+    const paginationFilter = pick(params, paginationFields)
+    return await this.enrollmentService.findAll(filter, paginationFilter);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.enrollmentService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.enrollmentService.findOne(+id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.enrollmentService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.enrollmentService.remove(+id);
   }
 }

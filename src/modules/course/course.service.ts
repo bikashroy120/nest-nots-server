@@ -21,10 +21,6 @@ export class CourseService {
         categoryId: createCourseDto.categoryId,
       },
     });
-
-    console.log(result);
-
-
     return result;
   }
 
@@ -75,7 +71,7 @@ export class CourseService {
       },
       skip,
       take: limit,
-      orderBy: sortBy && sortBy ? { [sortBy]: sortOrder } : { createdAt: "desc" }
+      orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: "desc" }
     })
 
     const total = await this.prismaCLient.course.count({
