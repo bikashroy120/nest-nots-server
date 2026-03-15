@@ -20,13 +20,50 @@ export class ChapterService {
 
   async findAll(id: number) {
     const result = await this.prismaClient.chapter.findMany({
-      where: { courseId: id }
+      where: { courseId: id },
+      include: {
+        lessons: {
+          include: {
+
+          }
+        }
+      }
     });
 
     if (!result) {
       return []
     }
     return result;
+  }
+
+  async viewLesson(id: number, userId: number) {
+    try {
+      const result = await this.prismaClient.chapter.findMany({
+        where: { courseId: id },
+        include: {
+          lessons: {
+            include: {
+              progresses: {
+                where: {
+                  enrollment: {
+                    userId: userId,
+                    courseId: id
+                  }
+                },
+                select: {
+                  isCompleted: true
+                }
+              }
+            }
+          }
+        }
+      })
+
+      return result;
+    } catch (error) {
+      console.log(error)
+      return []
+    }
   }
 
   async findOne(id: number) {
