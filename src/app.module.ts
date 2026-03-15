@@ -11,9 +11,10 @@ import { CourseModule } from './modules/course/course.module';
 import { ChapterModule } from './modules/chapter/chapter.module';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { EnrollmentModule } from './modules/enrollment/enrollment.module';
+import { ProgressModule } from './modules/progress/progress.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, CategoryModule, PrismaModule, CourseModule, ChapterModule, LessonModule, EnrollmentModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, CategoryModule, PrismaModule, CourseModule, ChapterModule, LessonModule, EnrollmentModule, ProgressModule],
   controllers: [AppController],
   providers: [AppService],
 })
